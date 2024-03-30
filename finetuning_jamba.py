@@ -2,8 +2,16 @@ from datasets import load_dataset
 from trl import SFTTrainer
 from peft import LoraConfig
 import torch
-import mamba_ssm #Check if you do not have any import issue to use the Fast Mamba Kernel
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments,  BitsAndBytesConfig
+
+#Check if you do not have any import issue to use the Fast Mamba Kernel
+#Will (very appropriately) break before loading the weights.
+import mamba_ssm
+
+#With 4bit quants have to manually correct modeling_jamba.py on l. 1070:
+#if not is_fast_path_available or "cuda" not in self.x_proj.weight.device.type:
+#becoming:
+#if not is_fast_path_available:
 
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
